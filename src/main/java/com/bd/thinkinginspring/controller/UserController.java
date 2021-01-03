@@ -1,8 +1,8 @@
 package com.bd.thinkinginspring.controller;
 
 import com.bd.thinkinginspring.entity.User;
-import com.bd.thinkinginspring.service.UserService;
 import com.bd.thinkinginspring.service.impl.UserServiceImpl;
+import com.bd.thinkinginspring.utils.RedisUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,16 +27,23 @@ public class UserController {
     @Autowired
     private UserServiceImpl userService;
 
+    @Autowired
+    private RedisUtils redisUtils;
+
 
     @RequestMapping(value = "getUser/{id}", method = RequestMethod.GET)
     public User getUser(@PathVariable int id) {
         LOGGER.info("hello world 何保敬");
+
+        boolean b = redisUtils.set("bob", "何保敬");
+        LOGGER.info(String.format("set k-v pair in redis succesfully, result is :[%s]", b));
         return userService.getUser(id);
     }
 
     @RequestMapping(value = "getAllUsers/", method = RequestMethod.GET)
     public List<User> getAllUsers() {
-        LOGGER.info("hello world 何保敬");
+        Object o = redisUtils.get("bob");
+        LOGGER.info(String.format("get value [%s] with key [%s]", "bob", o));
         return userService.getAllUsers();
     }
 
