@@ -17,5 +17,4 @@ public class ThinkingInSpringApplication {
     public static void main(String[] args) {
         SpringApplication.run(ThinkingInSpringApplication.class, args);
     }
-
 }
