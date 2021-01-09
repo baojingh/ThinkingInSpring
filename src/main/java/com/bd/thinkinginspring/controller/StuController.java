@@ -32,8 +32,9 @@ public class StuController {
 
     @RequestMapping(value = "add/")
     public void addStu() {
-        Stu stu = Stu.builder().id(3).addr("nanjing").age(22).dept_id(4).build();
+        Stu stu = Stu.builder().id(5).addr("beijingnan").age(33).dept_id(4).build();
         stuService.insert(stu);
+        LOGGER.info("insert successfully, %s", stu.toString());
     }
 
 }
