@@ -13,9 +13,12 @@
     </sql>
 
     <select id="findByName" parameterType="string" resultMap="BaseResultMap">
-        select * from user where user_name = #{user_name}
+        select * from user_info where user_name = #{user_name}
     </select>
 
+    <select id="findById" parameterType="int" resultMap="BaseResultMap">
+        select * from user_info where id = #{id}
+    </select>
 
 </mapper>
 
