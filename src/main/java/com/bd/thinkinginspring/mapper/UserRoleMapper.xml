@@ -24,6 +24,10 @@
         select * from user_role where role_id = #{role_id}
     </select>
 
+    <select id="findRoleList" parameterType="int" resultMap="BaseResultMap">
+        select * from user_role where user_id = #{user_id}
+    </select>
+
 </mapper>
 
 

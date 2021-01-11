@@ -6,6 +6,8 @@ import com.bd.thinkinginspring.service.PermissionRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * @Author: baojing.he
  * @Date: 2021/1/9 22:25
@@ -29,7 +31,7 @@ public class PermissionRoleServiceImpl implements PermissionRoleService {
     }
 
     @Override
-    public PermissionRoleEntity findByRoleId(int roleId) {
+    public List<PermissionRoleEntity> findByRoleId(int roleId) {
         return permissionRoleMapper.findByRoleId(roleId);
     }
 }

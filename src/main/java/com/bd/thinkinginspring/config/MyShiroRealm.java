@@ -1,7 +1,9 @@
 package com.bd.thinkinginspring.config;
 
 import com.bd.thinkinginspring.entity.UserInfoEntity;
+import com.bd.thinkinginspring.entity.UserRoleEntity;
 import com.bd.thinkinginspring.service.UserInfoService;
+import com.bd.thinkinginspring.service.UserRoleService;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
@@ -16,6 +18,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Resource;
+import javax.management.relation.RoleInfo;
+import java.util.List;
 
 /**
  * @Author: baojing.he
@@ -28,13 +32,20 @@ public class MyShiroRealm extends AuthorizingRealm {
     @Resource
     private UserInfoService userInfoService;
 
+    @Resource
+    private UserRoleService userRoleService;
+
 
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
         LOGGER.info("权限配置-->MyShiroRealm.doGetAuthorizationInfo()");
         SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();
         UserInfoEntity userInfo  = (UserInfoEntity)principals.getPrimaryPrincipal();
-        for(SysRole role:userInfo.getRoleList()){
+        List<UserRoleEntity> roleList = userRoleService.findRoleList(userInfo.getId());
+
+
+
+        for(UserRoleEntity role:roleList){
             authorizationInfo.addRole(role.getRole());
             for(SysPermission p:role.getPermissions()){
                 authorizationInfo.addStringPermission(p.getPermission());

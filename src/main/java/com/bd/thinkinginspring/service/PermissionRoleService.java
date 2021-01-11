@@ -2,6 +2,8 @@ package com.bd.thinkinginspring.service;
 
 import com.bd.thinkinginspring.entity.PermissionRoleEntity;
 
+import java.util.List;
+
 /**
  * @Author: baojing.he
  * @Date: 2021/1/9 22:23
@@ -12,5 +14,5 @@ public interface PermissionRoleService {
 
     PermissionRoleEntity findByPermisionName(String permissionName);
 
-    PermissionRoleEntity findByRoleId(int roleId);
+    List<PermissionRoleEntity> findByRoleId(int roleId);
 }
