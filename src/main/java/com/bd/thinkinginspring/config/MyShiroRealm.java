@@ -1,7 +1,9 @@
 package com.bd.thinkinginspring.config;
 
+import com.bd.thinkinginspring.entity.PermissionRoleEntity;
 import com.bd.thinkinginspring.entity.UserInfoEntity;
 import com.bd.thinkinginspring.entity.UserRoleEntity;
+import com.bd.thinkinginspring.service.PermissionRoleService;
 import com.bd.thinkinginspring.service.UserInfoService;
 import com.bd.thinkinginspring.service.UserRoleService;
 import org.apache.shiro.SecurityUtils;
@@ -16,9 +18,9 @@ import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.util.ByteSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.Resource;
-import javax.management.relation.RoleInfo;
 import java.util.List;
 
 /**
@@ -29,26 +31,29 @@ import java.util.List;
 public class MyShiroRealm extends AuthorizingRealm {
     private static final Logger LOGGER = LoggerFactory.getLogger(MyShiroRealm.class);
 
-    @Resource
+    @Autowired
     private UserInfoService userInfoService;
 
-    @Resource
+    @Autowired
     private UserRoleService userRoleService;
+
+    @Autowired
+    private PermissionRoleService permissionRoleService;
 
 
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
         LOGGER.info("权限配置-->MyShiroRealm.doGetAuthorizationInfo()");
         SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();
-        UserInfoEntity userInfo  = (UserInfoEntity)principals.getPrimaryPrincipal();
-        List<UserRoleEntity> roleList = userRoleService.findRoleList(userInfo.getId());
-
-
-
-        for(UserRoleEntity role:roleList){
-            authorizationInfo.addRole(role.getRole());
-            for(SysPermission p:role.getPermissions()){
-                authorizationInfo.addStringPermission(p.getPermission());
+        UserInfoEntity userInfo = (UserInfoEntity) principals.getPrimaryPrincipal();
+        UserInfoEntity byId = userInfoService.findById(userInfo.getId());
+        List<UserRoleEntity> roleList = userRoleService.findRoleList(byId.getId());
+        for (UserRoleEntity role : roleList) {
+            int roleId = role.getRoleId();
+            authorizationInfo.addRole(Integer.toString(roleId));
+            List<PermissionRoleEntity> permissionList = permissionRoleService.findByRoleId(roleId);
+            for (PermissionRoleEntity p : permissionList) {
+                authorizationInfo.addStringPermission(p.getPermissionName());
             }
         }
         return authorizationInfo;
@@ -60,14 +65,14 @@ public class MyShiroRealm extends AuthorizingRealm {
             throws AuthenticationException {
         LOGGER.info("MyShiroRealm.doGetAuthenticationInfo()");
         // 获取用户的输入的账号.
-        String username = (String)token.getPrincipal();
+        String userName = (String) token.getPrincipal();
         // 获取用户的输入的密码
-        LOGGER.info(token.getCredentials());
+        LOGGER.info(token.getCredentials().toString());
         //通过username从数据库中查找 User对象，如果找到，没找到.
         //实际项目中，这里可以根据实际情况做缓存，如果不做，Shiro自己也是有时间间隔机制，2分钟内不会重复执行该方法
-        UserInfo userInfo = userInfoService.findByUsername(username);
-        LOGGER.info("----->>userInfo="+userInfo);
-        if(userInfo == null){
+        UserInfoEntity userInfo = userInfoService.findByName(userName);
+        LOGGER.info("----->>userInfo=" + userInfo);
+        if (userInfo == null) {
             return null;
         }
 
@@ -79,7 +84,7 @@ public class MyShiroRealm extends AuthorizingRealm {
         SimpleAuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(
                 userInfo, //用户名
                 userInfo.getPassword(), //密码
-                ByteSource.Util.bytes(userInfo.getSalt()),
+                ByteSource.Util.bytes(userInfo.getUserName()),
                 getName()  //realm name
         );
         //清除之前的授权信息
