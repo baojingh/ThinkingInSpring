@@ -13,6 +13,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Data
 public class UserInfoEntity {
     private int id;
     private String userName;

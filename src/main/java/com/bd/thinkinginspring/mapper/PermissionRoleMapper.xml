@@ -5,7 +5,7 @@
     <resultMap id="BaseResultMap" type="com.bd.thinkinginspring.entity.PermissionRoleEntity">
         <result column="id"              jdbcType="INTEGER" property="id" />
         <result column="role_id"         jdbcType="INTEGER" property="roleId" />
-        <result column="permission_name"         jdbcType="varchar" property="permissionName" />
+        <result column="permission_name"         jdbcType="VARCHAR" property="permissionName" />
     </resultMap>
 
     <sql id="Base_Column_List" >

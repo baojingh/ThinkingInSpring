@@ -11,7 +11,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  */
 
 @SpringBootApplication
-@MapperScan(value = "com.bd.thinkinginspring.mapper")
 public class ThinkingInSpringApplication {
 
     public static void main(String[] args) {
