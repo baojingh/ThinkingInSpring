@@ -37,13 +37,9 @@ public class ShiroConfig {
         filterMap.put("/v2/**", "anon");
         // 对所有用户认证
         filterMap.put("/**", "authc");
-        //操作权限认证
-//        filterMap.put("/deleteUser", "authc");
-//        filterMap.put("/updateUser", "authc");
-
         // 授权
-        filterMap.put("/deleteUser", "perms[delete]");
-        filterMap.put("/updateUser", "perms[update]");
+//        filterMap.put("/deleteUser", "perms[user:delete]");
+//        filterMap.put("/updateUser", "perms[user:update]");
         // 登录
         shiroFilterFactoryBean.setLoginUrl("/login");
         // 首页

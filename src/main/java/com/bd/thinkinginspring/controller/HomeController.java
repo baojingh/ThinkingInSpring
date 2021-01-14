@@ -53,8 +53,7 @@ public class HomeController {
         return "login succesfully";
     }
 
-//    @RequiresRoles("admin")
-    @RequiresPermissions("delete")
+    @RequiresRoles({"admin"})
     @ApiOperation(value = "delete user", notes = "")
     @DeleteMapping(value = "/deleteUser")
     public String deleteUser() {
@@ -62,10 +61,10 @@ public class HomeController {
         return "delete user succesfully";
     }
 
-    @RequiresRoles("normal")
+    @RequiresPermissions({"user:update"})
     @PostMapping(value = "/updateUser")
     @ApiOperation(value = "update user", notes = "")
-    public String updateUser(@RequestBody UserInfoEntity user) {
+    public String updateUser() {
         LOGGER.info("update user succesfully");
         return "update user succesfully";
     }

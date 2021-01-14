@@ -19,6 +19,12 @@ public class ThinkingInSpringApplication {
      *
      *
      *
+     * springboot集成shiro
+     * https://segmentfault.com/a/1190000014479154
+     *
+     * 官网springboot+shiro
+     * https://shiro.apache.org/spring-boot.html
+     *
      */
 
     public static void main(String[] args) {

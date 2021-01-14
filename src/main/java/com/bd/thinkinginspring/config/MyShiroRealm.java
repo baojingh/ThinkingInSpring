@@ -16,11 +16,13 @@ import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
+import org.apache.shiro.subject.Subject;
 import org.apache.shiro.util.ByteSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -44,57 +46,43 @@ public class MyShiroRealm extends AuthorizingRealm {
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
         LOGGER.info("权限配置-->MyShiroRealm.doGetAuthorizationInfo()");
-        SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();
-        UserInfoEntity userInfo = (UserInfoEntity) principals.getPrimaryPrincipal();
-        UserInfoEntity byId = userInfoService.findById(userInfo.getId());
-        List<UserRoleEntity> roleList = userRoleService.findRoleList(byId.getId());
-        for (UserRoleEntity role : roleList) {
-            int roleId = role.getRoleId();
-            authorizationInfo.addRole(Integer.toString(roleId));
-            List<PermissionRoleEntity> permissionList = permissionRoleService.findByRoleId(roleId);
-            for (PermissionRoleEntity p : permissionList) {
-                authorizationInfo.addStringPermission(p.getPermissionName());
-            }
+        UserInfoEntity userInfoEntity = (UserInfoEntity) principals.getPrimaryPrincipal();
+        String principal = (String)getAvailablePrincipal(principals);
+        if ("sucy".equals(principal)) {
+            SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();
+            authorizationInfo.addRole("admin");
+            authorizationInfo.addStringPermission("user:delete");
+            return authorizationInfo;
         }
-        return authorizationInfo;
+        return null;
     }
 
     /*主要是用来进行身份认证的，也就是说验证用户输入的账号和密码是否正确。*/
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token)
             throws AuthenticationException {
-        LOGGER.info("MyShiroRealm.doGetAuthenticationInfo()");
         // 获取用户的输入的账号.
         String userName = (String) token.getPrincipal();
+        if (userName == null) {
+            LOGGER.warn(String.format("user [%s] not exists and return", userName));
+            return null;
+        }
+        LOGGER.info("MyShiroRealm.doGetAuthenticationInfo()");
         // 获取用户的输入的密码
         LOGGER.info(JSONObject.toJSONString(token));
         //通过username从数据库中查找 User对象，如果找到，没找到.
         //实际项目中，这里可以根据实际情况做缓存，如果不做，Shiro自己也是有时间间隔机制，2分钟内不会重复执行该方法
         UserInfoEntity userInfo = userInfoService.findByName(userName);
-        LOGGER.info(String.format("current user info is : %s", userInfo));
-        if (userInfo == null) {
-            LOGGER.warn(String.format("user [%s] not exists and return", userName));
-            return null;
-        }
 
+        LOGGER.info(String.format("current user info is : %s", userInfo));
         // 进行认证，将正确数据给shiro处理
         // 密码不用自己比对，AuthenticationInfo认证信息对象，一个接口，new他的实现类对象SimpleAuthenticationInfo
         /*	第一个参数随便放，可以放user对象，程序可在任意位置获取 放入的对象
          *  第二个参数必须放密码，
          *  第三个参数放 当前realm的名字，因为可能有多个realm*/
-        SimpleAuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(
-                userInfo, //用户名
-                userInfo.getPassword(), //密码
-                ByteSource.Util.bytes(userInfo.getUserName()),
-                getName()  //realm name
-        );
-        //清除之前的授权信息
-        super.clearCachedAuthorizationInfo(authenticationInfo.getPrincipals());
-        // 存入用户对象
-        SecurityUtils.getSubject().getSession().setAttribute("login", userInfo);
-        // 返回给安全管理器，securityManager，由securityManager比对数据库查询出的密码和页面提交的密码
-        // 如果有问题，向上抛异常，一直抛到控制器
-        return authenticationInfo;
+        AuthenticationInfo aInfo = new SimpleAuthenticationInfo(userInfo.getUserName(),userInfo.getPassword(),getName());
+
+        return aInfo;
     }
 
 }
