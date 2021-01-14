@@ -1,14 +1,15 @@
 package com.bd.thinkinginspring.controller;
 
 import com.bd.thinkinginspring.entity.UserInfoEntity;
-import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.apache.shiro.authz.annotation.RequiresUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +21,6 @@ import org.springframework.web.bind.annotation.*;
  * @Description:
  */
 
-@Api(value = "/user")
 @RestController
 public class HomeController {
 
@@ -53,7 +53,7 @@ public class HomeController {
         return "login succesfully";
     }
 
-    @RequiresRoles({"admin"})
+    @RequiresRoles("admin")
     @ApiOperation(value = "delete user", notes = "")
     @DeleteMapping(value = "/deleteUser")
     public String deleteUser() {
@@ -61,7 +61,7 @@ public class HomeController {
         return "delete user succesfully";
     }
 
-    @RequiresPermissions({"user:update"})
+    @RequiresPermissions("user:update")
     @PostMapping(value = "/updateUser")
     @ApiOperation(value = "update user", notes = "")
     public String updateUser() {
@@ -69,6 +69,7 @@ public class HomeController {
         return "update user succesfully";
     }
 
+    @RequiresAuthentication
     @GetMapping(value = "/logout")
     public String logout() {
         LOGGER.info("logout succesfully");
@@ -76,6 +77,7 @@ public class HomeController {
     }
 
 
+    @RequiresUser
     @GetMapping(value = "/error")
     public String error() {
         LOGGER.info("error occurs");
