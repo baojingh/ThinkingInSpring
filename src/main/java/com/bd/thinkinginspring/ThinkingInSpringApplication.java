@@ -13,6 +13,14 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class ThinkingInSpringApplication {
 
+    /**
+     * 重点参考如下文章：
+     * https://www.cnblogs.com/xifengxiaoma/p/11061142.html
+     *
+     *
+     *
+     */
+
     public static void main(String[] args) {
         SpringApplication.run(ThinkingInSpringApplication.class, args);
     }

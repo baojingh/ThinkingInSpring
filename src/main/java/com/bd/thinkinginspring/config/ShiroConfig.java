@@ -1,8 +1,8 @@
 package com.bd.thinkinginspring.config;
 
+import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
-import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,7 +10,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -38,6 +37,13 @@ public class ShiroConfig {
         filterMap.put("/v2/**", "anon");
         // 对所有用户认证
         filterMap.put("/**", "authc");
+        //操作权限认证
+//        filterMap.put("/deleteUser", "authc");
+//        filterMap.put("/updateUser", "authc");
+
+        // 授权
+        filterMap.put("/deleteUser", "perms[delete]");
+        filterMap.put("/updateUser", "perms[update]");
         // 登录
         shiroFilterFactoryBean.setLoginUrl("/login");
         // 首页
